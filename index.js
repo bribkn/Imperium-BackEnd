@@ -44,14 +44,13 @@ app.use(function (req, res, next) {
     next();
 });
 
-
 app.get('/', (req, res) => {
     res.send('Hello from server');
 });
 
 app.get('/login', (req, res) => {
-    const { rut, pass } = req.query;
-    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password=${pass}`;
+    const { rut, password } = req.query;
+    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND word='${password}'`;
 
     pool.query(LOGIN_QUERY, (err, results) => {
         if (err) {
