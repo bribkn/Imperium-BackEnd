@@ -1,6 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
-const cred = require('./credentials');
+const cred = require('./config/credentials');
 
 const app = express();
 
@@ -27,9 +27,11 @@ app.get('/', (req, res) => {
     res.send('Hello from server');
 });
 
-const SELECT_ALL_QUERY = `SELECT * FROM `;
-app.get('/purchases', (req, res) => {
-    pool.query(SELECT_ALL_PURCHASES_QUERY, (err, results) => {
+app.get('/login', (req, res) => {
+    const { rut, pass } = req.query;
+    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password=${pass}`;
+
+    pool.query(LOGIN_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
