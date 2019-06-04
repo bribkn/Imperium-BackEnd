@@ -1,6 +1,9 @@
 const express = require('express');
 const mysql = require('mysql');
+<<<<<<< HEAD
 const cors = require('cors');
+=======
+>>>>>>> master
 const cred = require('./config/credentials');
 
 const app = express();
@@ -50,8 +53,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    const { rut, password } = req.query;
-    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password='${password}'`;
+    const { rut, pass } = req.query;
+    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password=${pass}`;
 
     pool.query(LOGIN_QUERY, (err, results) => {
         if (err) {
