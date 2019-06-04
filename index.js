@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
     const { rut, password } = req.query;
-    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND word='${password}'`;
+    const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password='${password}'`;
 
     pool.query(LOGIN_QUERY, (err, results) => {
         if (err) {
