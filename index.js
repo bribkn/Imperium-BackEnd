@@ -1,9 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
-<<<<<<< HEAD
 const cors = require('cors');
-=======
->>>>>>> master
 const cred = require('./config/credentials');
 
 const app = express();
