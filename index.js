@@ -63,6 +63,34 @@ app.get('/login', (req, res) => {
     });
 });
 
+app.get('/students', (req, res) => {
+    const STUDENTS_QUERY = `SELECT * FROM alumnos`;
+
+    pool.query(STUDENTS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+app.get('/users', (req, res) => {
+    const USERS_QUERY = `SELECT * FROM usuarios`;
+
+    pool.query(USERS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
 // Console stuff
 var port = process.env.PORT || 8000;
 app.listen(port, "0.0.0.0", () => {
