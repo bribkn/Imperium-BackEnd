@@ -48,6 +48,8 @@ app.get('/', (req, res) => {
     res.send('Hello from server');
 });
 
+//LOGIN
+
 app.get('/login', (req, res) => {
     const { rut, password } = req.query;
     const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password='${password}'`;
@@ -90,6 +92,101 @@ app.get('/users', (req, res) => {
         }
     });
 });
+
+//BUSCAR ALUMNOS TRANSPORTADOS POR UN TÍO
+
+app.get('/alumnosdetio', (req, res) => {
+    const {rut} = req.query;
+    const ADET_QUERY = `SELECT * FROM alumnos WHERE patente_furgon = (SELECT patente FROM furgones WHERE rut_tio=${rut})`;
+
+    pool.query(ADET_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR ALUMNOS DE UN APODERADO
+app.get('/alumnosdeapoderado', (req, res) => {
+    const {rut} = req.query;
+    const ADEA_QUERY = `SELECT * FROM alumnos WHERE id = (SELECT alumno_id FROM tiene WHERE usuario_rut=${rut})`;
+
+    pool.query(ADEA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR UN TÍO POR SU NOMBRE Y/O APELLIDO
+
+app.get('/tiopornombre', (req, res) => {
+    const {nombre, apellido} = req.query;
+    const TXN_QUERY = `SELECT * FROM usuarios WHERE nombre='${nombre}' AND apellido='${apellido}' AND rol=${2}`;
+
+    pool.query(TXN_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR A UN TÍO POR ALGUNO DE SUS ALUMNOS TRANSPORTADOS
+
+app.get('/tioporalumno', (req, res) => {
+    const {rut} = req.query;
+    const TXA_QUERY = `SELECT * FROM usuarios WHERE rut= (SELECT rut_tio FROM furgones WHERE patente = (SELECT patente_furgon FROM alumnos WHERE rut=${rut}))`;
+
+    pool.query(TXA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//MODIFICAR EL NUMERO DE TELEFONO DE UN USUARIO
+app.get('/modificartelefono', (req, res) => {
+    const {rut, telefono} = req.query;
+    const TEL_QUERY = `UPDATE usuarios SET telefono = ${telefono} WHERE rut=${rut}`;
+
+    pool.query(TEL_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//MODIFICAR EL NUMERO DE TELEFONO DE USUARIO
+
+//MODIFICAR EL FURGÓN DE UN ALUMNO
+
+//MODIFICAR EL FURGÓN DE UN TÍO
+
+//REGISTRAR UN TÍO
+
+//REGISTRAR UN APODERADO
+
+//REGISTRAR UN ALUMNO
 
 // Console stuff
 var port = process.env.PORT || 8000;
