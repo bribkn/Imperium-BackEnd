@@ -160,12 +160,13 @@ app.get('/tioporalumno', (req, res) => {
     });
 });
 
-//MODIFICAR EL NUMERO DE TELEFONO DE UN USUARIO
-app.get('/modificartelefono', (req, res) => {
-    const {rut, telefono} = req.query;
-    const TEL_QUERY = `UPDATE usuarios SET telefono = ${telefono} WHERE rut=${rut}`;
+//MODIFICAR DATOS DEL USUARIO
+app.get('/modificarusuario', (req, res) => {
+    const {rut, nick, password, nombre, apellido, telefono, direccion} = req.query;
+    const MODUS_QUERY = `UPDATE usuarios SET nick = '${nick}', password = '${password}',
+    nombre = '${nombre}', apellido = '${apellido}', telefono = ${telefono}, direccion = '${direccion}' WHERE rut=${rut}`;
 
-    pool.query(TEL_QUERY, (err, results) => {
+    pool.query(MODUS_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -176,17 +177,113 @@ app.get('/modificartelefono', (req, res) => {
     });
 });
 
-//MODIFICAR EL NUMERO DE TELEFONO DE USUARIO
+//MODIFICAR DATOS DE UN ALUMNO
 
-//MODIFICAR EL FURGÓN DE UN ALUMNO
+app.get('/modificaralumno', (req, res) => {
+    const {rut, nombre, apellido, nivel, patente_furgon, curso} = req.query;
+    const MODAL_QUERY = `UPDATE alumnos SET nombre = '${nombre}', apellido = '${apellido}', nivel = '${nivel}', 
+    patente_furgon = '${patente_furgon}', curso = '${curso}' WHERE rut=${rut}`;
+
+    pool.query(MODAL_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
 
 //MODIFICAR EL FURGÓN DE UN TÍO
 
-//REGISTRAR UN TÍO
+app.get('/modificarfurgon', (req, res) => {
+    const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
+    const MODFUR_QUERY = `UPDATE usuarios SET rut_tio = ${rut_tio}, marca = '${marca}', modelo = '${modelo}', 
+    capacidad = ${capacidad}, ano = ${ano} WHERE rut=${patente}`;
 
-//REGISTRAR UN APODERADO
+    pool.query(MODFUR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//REGISTRAR UN USUARIO
+
+app.get('/registrarusuario', (req, res) => {
+    const {rut, nick, password, nombre, apellido, telefono, direccion} = req.query;
+    const REGUS_QUERY = `INSERT INTO usuarios (rut, nick, password, nombre, apellido, telefono, direccion) VALUES
+    (${rut}, '${nick}', '${nombre}', '${apellido}', '${password}', ${telefono}, '${direccion}')`;
+    
+    pool.query(REGUS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
 
 //REGISTRAR UN ALUMNO
+
+app.get('/registraralumno', (req, res) => {
+    const {rut, nombre, apellido, nivel, patente_furgon, curso} = req.query;
+    const REGAL_QUERY = `INSERT INTO alumnos (rut, nombre, apellido, nivel, patente_furgon, curso) VALUES
+    (${rut}, '${nombre}', '${apellido}', '${nivel}', '${patente_furgon}', '${curso}'`;
+
+    pool.query(REGAL_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//REGISTRAR FURGON
+
+app.get('/registrarfurgon', (req, res) => {
+    const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
+    const REGFUR_QUERY = `INSERT INTO furgones (patente, rut_tio, marca, modelo, capacidad, ano) VALUES
+    ('${patente}', ${rut_tio}, '${marca}', '${modelo}', ${capacidad}, ${ano}))`;
+
+    pool.query(REGFUR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//OBTENER DIRECCION DE ALUMNO
+
+app.get('/obtenerdireccion', (req, res) => {
+    const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
+    const REGFUR_QUERY = `INSERT INTO furgones (patente, rut_tio, marca, modelo, capacidad, ano) VALUES
+    ('${patente}', ${rut_tio}, '${marca}', '${modelo}', ${capacidad}, ${ano}))`;
+
+    pool.query(REGFUR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
 
 // Console stuff
 var port = process.env.PORT || 8000;
