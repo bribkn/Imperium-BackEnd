@@ -1,9 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
-<<<<<<< HEAD
 const cors = require('cors');
-=======
->>>>>>> master
 const cred = require('./config/credentials');
 
 const app = express();
@@ -52,11 +49,221 @@ app.get('/', (req, res) => {
     res.send('Hello from server');
 });
 
+//LOGIN
 app.get('/login', (req, res) => {
     const { rut, pass } = req.query;
     const LOGIN_QUERY = `SELECT * FROM usuarios WHERE rut=${rut} AND password=${pass}`;
 
     pool.query(LOGIN_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+app.get('/students', (req, res) => {
+    const STUDENTS_QUERY = `SELECT * FROM alumnos order by id`;
+
+    pool.query(STUDENTS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+app.get('/users', (req, res) => {
+    const USERS_QUERY = `SELECT * FROM usuarios ORDER BY rut`;
+
+    pool.query(USERS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+app.get('/users/search', (req, res) => {
+    const { rut } = req.query;
+    const USERS_QUERY = `SELECT * FROM usuarios WHERE rut = ${rut}`;
+
+    pool.query(USERS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR ALUMNOS TRANSPORTADOS POR UN TÍO
+app.get('/students/tio', (req, res) => {
+    const { rut } = req.query;
+    const ADET_QUERY = `SELECT * FROM alumnos WHERE patente_furgon = (SELECT patente FROM furgones WHERE rut_tio=${rut}) ORDER BY id`;
+
+    pool.query(ADET_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR ALUMNOS DE UN APODERADO
+app.get('/students/apoderado', (req, res) => {
+    const {rut} = req.query;
+    const ADEA_QUERY = `SELECT * FROM alumnos WHERE id = (SELECT alumno_id FROM tiene WHERE usuario_rut=${rut}) order by id`;
+
+    pool.query(ADEA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR UN TÍO POR SU NOMBRE Y/O APELLIDO
+app.get('/tio', (req, res) => {
+    const {nombre, apellido} = req.query;
+    const TXN_QUERY = `SELECT * FROM usuarios WHERE nombre='${nombre}' AND apellido='${apellido}' AND rol=${2}`;
+
+    pool.query(TXN_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//BUSCAR A UN TÍO POR ALGUNO DE SUS ALUMNOS TRANSPORTADOS
+app.get('/tio/search', (req, res) => {
+    const {id} = req.query;
+    const TXA_QUERY = `SELECT * FROM usuarios WHERE rut= (SELECT rut_tio FROM furgones WHERE patente = (SELECT patente_furgon FROM alumnos WHERE id=${id}))`;
+
+    pool.query(TXA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//MODIFICAR DATOS DEL USUARIO
+app.get('/users/modify', (req, res) => {
+    const {rut, password, nombre, apellido, telefono, direccion} = req.query;
+    const MODUS_QUERY = `UPDATE usuarios SET password = '${password}', nombre = '${nombre}', apellido = '${apellido}',
+    telefono = ${telefono}, direccion = '${direccion}' WHERE rut=${rut}`;
+
+    pool.query(MODUS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//MODIFICAR DATOS DE UN ALUMNO
+app.get('/students/modify', (req, res) => {
+    const {rut, nombre, apellido, nivel, patente_furgon, curso} = req.query;
+    const MODAL_QUERY = `UPDATE alumnos SET nombre = '${nombre}', apellido = '${apellido}', nivel = '${nivel}',
+    patente_furgon = '${patente_furgon}', curso = '${curso}' WHERE id=${id}`;
+
+    pool.query(MODAL_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//MODIFICAR EL FURGÓN DE UN TÍO
+app.get('/furgon/modify', (req, res) => {
+    const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
+    const MODFUR_QUERY = `UPDATE furgones SET rut_tio = ${rut_tio}, marca = '${marca}', modelo = '${modelo}',
+    capacidad = ${capacidad}, ano = ${ano} WHERE patente=${patente}`;
+
+    pool.query(MODFUR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//REGISTRAR UN USUARIO
+app.get('/users/register', (req, res) => {
+    const {rut, password, nombre, apellido, telefono, direccion} = req.query;
+    const REGUS_QUERY = `INSERT INTO usuarios (rut, password, nombre, apellido, telefono, direccion) VALUES
+    (${rut}, '${nombre}', '${apellido}', '${password}', ${telefono}, '${direccion}')`;
+
+    pool.query(REGUS_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//REGISTRAR UN ALUMNO
+app.get('/students/register', (req, res) => {
+    const {id, nombre, apellido, nivel, patente_furgon, curso} = req.query;
+    const REGAL_QUERY = `INSERT INTO alumnos (id, nombre, apellido, nivel, patente_furgon, curso, tipo_viaje, sector) VALUES
+    (${id}, '${nombre}', '${apellido}', '${nivel}', '${patente_furgon}', '${curso}', '${tipo_viaje}', ${sector})`;
+
+    pool.query(REGAL_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//REGISTRAR FURGON
+app.get('/furgon/register', (req, res) => {
+    const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
+    const REGFUR_QUERY = `INSERT INTO furgones (patente, rut_tio, marca, modelo, capacidad, ano) VALUES
+    ('${patente}', ${rut_tio}, '${marca}', '${modelo}', ${capacidad}, ${ano})`;
+
+    pool.query(REGFUR_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
