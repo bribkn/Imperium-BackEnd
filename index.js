@@ -273,6 +273,27 @@ app.get('/furgon/register', (req, res) => {
     });
 });
 
+//BUSCAR A QUIÉN PUEDE ENVIAR NOTIFICACIÓN
+
+app.get('/notification/search', (req, res) => {
+    const {rut} = req.query;
+    const NOTSEA_QUERY = `SELECT nombre, apellido FROM usuarios WHERE rut IN (SELECT rut_tio FROM furgones WHERE patente = 
+        (SELECT patente_furgon FROM alumnos WHERE id IN (SELECT alumno_id FROM tiene WHERE usuario_rut = ${rut})))
+        UNION
+        SELECT nombre, apellido FROM usuarios WHERE rut IN (SELECT usuario_rut FROM tiene WHERE alumno_id IN (SELECT id FROM alumnos 
+        WHERE patente_furgon IN (SELECT patente FROM furgones WHERE rut_tio=${rut})))`;
+
+    pool.query(NOTSEA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
 // Console stuff
 var port = process.env.PORT || 8000;
 app.listen(port, "0.0.0.0", () => {
