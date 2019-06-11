@@ -277,10 +277,10 @@ app.get('/furgon/register', (req, res) => {
 
 app.get('/notification/search', (req, res) => {
     const {rut} = req.query;
-    const NOTSEA_QUERY = `SELECT nombre, apellido FROM usuarios WHERE rut IN (SELECT rut_tio FROM furgones WHERE patente = 
+    const NOTSEA_QUERY = `SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT rut_tio FROM furgones WHERE patente = 
         (SELECT patente_furgon FROM alumnos WHERE id IN (SELECT alumno_id FROM tiene WHERE usuario_rut = ${rut})))
         UNION
-        SELECT nombre, apellido FROM usuarios WHERE rut IN (SELECT usuario_rut FROM tiene WHERE alumno_id IN (SELECT id FROM alumnos 
+        SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT usuario_rut FROM tiene WHERE alumno_id IN (SELECT id FROM alumnos 
         WHERE patente_furgon IN (SELECT patente FROM furgones WHERE rut_tio=${rut})))`;
 
     pool.query(NOTSEA_QUERY, (err, results) => {
@@ -293,6 +293,26 @@ app.get('/notification/search', (req, res) => {
         }
     });
 });
+
+//OBTENER NOTIFICACIONES
+
+app.get('/message/search', (req, res) => {
+    const {rut} = req.query;
+    const MESSEA_QUERY = `SELECT mensajes.id, usuarios.nombre, usuarios.apellido, rut_emisor, mensaje, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM mensajes, 
+    usuarios WHERE rut_receptor = ${rut} AND usuarios.rut = mensajes.rut_emisor ORDER BY id DESC`;
+
+    pool.query(MESSEA_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+
 
 // Console stuff
 var port = process.env.PORT || 8000;
