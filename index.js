@@ -312,7 +312,74 @@ app.get('/message/search', (req, res) => {
     });
 });
 
+//NUEVA NOTIFICACION
 
+app.get('/message/new', (req, res) => {
+    const {rut_emisor, rut_receptor, mensaje, fecha} = req.query;
+    const NEWMES_QUERY = `INSERT INTO mensajes (rut_emisor, rut_receptor, mensaje, fecha) VALUES
+    (${rut_emisor}, ${rut_receptor}, '${mensaje}', '${fecha}')`;
+
+    pool.query(NEWMES_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//ELIMINAR FURGON
+
+app.get('/furgon/delete', (req, res) => {
+    const {patente} = req.query;
+    const DELFUR_QUERY = `DELETE FROM furgones WHERE patente=${patente})`;
+
+    pool.query(DELFUR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//ELIMINAR USUARIO
+
+app.get('/user/delete', (req, res) => {
+    const {rut} = req.query;
+    const DELUSU_QUERY = `DELETE FROM usuarios WHERE rut=${rut})`;
+
+    pool.query(DELUSU_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//ELIMINAR ALUMNO
+
+app.get('/students/delete', (req, res) => {
+    const {id} = req.query;
+    const DELALU_QUERY = `DELETE FROM alumnos WHERE id=${id})`;
+
+    pool.query(DELALU_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
 
 // Console stuff
 var port = process.env.PORT || 8000;
