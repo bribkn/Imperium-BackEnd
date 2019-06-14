@@ -65,7 +65,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/students', (req, res) => {
-    const STUDENTS_QUERY = `SELECT * FROM alumnos order by id`;
+    const STUDENTS_QUERY = `SELECT * FROM alumnos ORDER BY id`;
 
     pool.query(STUDENTS_QUERY, (err, results) => {
         if (err) {
@@ -94,9 +94,9 @@ app.get('/users', (req, res) => {
 
 app.get('/users/search', (req, res) => {
     const { rut } = req.query;
-    const USERS_QUERY = `SELECT * FROM usuarios WHERE rut = ${rut}`;
+    const USERS_SEARCH_QUERY = `SELECT * FROM usuarios WHERE rut=${rut}`;
 
-    pool.query(USERS_QUERY, (err, results) => {
+    pool.query(USERS_SEARCH_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -107,12 +107,12 @@ app.get('/users/search', (req, res) => {
     });
 });
 
-//BUSCAR ALUMNOS TRANSPORTADOS POR UN TÍO
+//BUSCAR ESTUDIANTES TRANSPORTADOS POR UN TÍO
 app.get('/students/tio', (req, res) => {
     const { rut } = req.query;
-    const ADET_QUERY = `SELECT * FROM alumnos WHERE patente_furgon = (SELECT patente FROM furgones WHERE rut_tio=${rut}) ORDER BY id`;
+    const STUDENTS_BY_TIO_QUERY = `SELECT * FROM alumnos WHERE patente_furgon = (SELECT patente FROM furgones WHERE rut_tio=${rut}) ORDER BY id`;
 
-    pool.query(ADET_QUERY, (err, results) => {
+    pool.query(STUDENTS_BY_TIO_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -123,12 +123,12 @@ app.get('/students/tio', (req, res) => {
     });
 });
 
-//BUSCAR ALUMNOS DE UN APODERADO
+//BUSCAR ESTUDIANTES DE UN APODERADO
 app.get('/students/apoderado', (req, res) => {
     const {rut} = req.query;
-    const ADEA_QUERY = `SELECT * FROM alumnos WHERE id = (SELECT alumno_id FROM tiene WHERE usuario_rut=${rut}) order by id`;
+    const STUDENTS_BY_APODERADO_QUERY = `SELECT * FROM alumnos WHERE id = (SELECT alumno_id FROM tiene WHERE usuario_rut=${rut}) ORDER BY id`;
 
-    pool.query(ADEA_QUERY, (err, results) => {
+    pool.query(STUDENTS_BY_APODERADO_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -142,9 +142,9 @@ app.get('/students/apoderado', (req, res) => {
 //BUSCAR UN TÍO POR SU NOMBRE Y/O APELLIDO
 app.get('/tio', (req, res) => {
     const {nombre, apellido} = req.query;
-    const TXN_QUERY = `SELECT * FROM usuarios WHERE nombre='${nombre}' AND apellido='${apellido}' AND rol=${2}`;
+    const TIO_BY_NAME_QUERY = `SELECT * FROM usuarios WHERE nombre='${nombre}' AND apellido='${apellido}' AND rol=${2}`;
 
-    pool.query(TXN_QUERY, (err, results) => {
+    pool.query(TIO_BY_NAME_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -155,12 +155,12 @@ app.get('/tio', (req, res) => {
     });
 });
 
-//BUSCAR A UN TÍO POR ALGUNO DE SUS ALUMNOS TRANSPORTADOS
+//BUSCAR A UN TÍO POR ALGUNO DE SUS ESTUDIANTES TRANSPORTADOS
 app.get('/tio/search', (req, res) => {
     const {id} = req.query;
-    const TXA_QUERY = `SELECT * FROM usuarios WHERE rut= (SELECT rut_tio FROM furgones WHERE patente = (SELECT patente_furgon FROM alumnos WHERE id=${id}))`;
+    const TIO_BY_STUDENT_QUERY = `SELECT * FROM usuarios WHERE rut=(SELECT rut_tio FROM furgones WHERE patente = (SELECT patente_furgon FROM alumnos WHERE id=${id}))`;
 
-    pool.query(TXA_QUERY, (err, results) => {
+    pool.query(TIO_BY_STUDENT_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -174,10 +174,10 @@ app.get('/tio/search', (req, res) => {
 //MODIFICAR DATOS DEL USUARIO
 app.get('/users/modify', (req, res) => {
     const {rut, password, nombre, apellido, telefono, direccion} = req.query;
-    const MODUS_QUERY = `UPDATE usuarios SET password = '${password}', nombre = '${nombre}', apellido = '${apellido}',
-    telefono = ${telefono}, direccion = '${direccion}' WHERE rut=${rut}`;
+    const MOD_USER_QUERY = `UPDATE usuarios SET password='${password}', nombre='${nombre}', apellido='${apellido}',
+    telefono=${telefono}, direccion='${direccion}' WHERE rut=${rut}`;
 
-    pool.query(MODUS_QUERY, (err, results) => {
+    pool.query(MOD_USER_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -188,13 +188,13 @@ app.get('/users/modify', (req, res) => {
     });
 });
 
-//MODIFICAR DATOS DE UN ALUMNO
+//MODIFICAR DATOS DE UN ESTUDIANTE
 app.get('/students/modify', (req, res) => {
     const {rut, nombre, apellido, nivel, patente_furgon, curso} = req.query;
-    const MODAL_QUERY = `UPDATE alumnos SET nombre = '${nombre}', apellido = '${apellido}', nivel = '${nivel}',
-    patente_furgon = '${patente_furgon}', curso = '${curso}' WHERE id=${id}`;
+    const MOD_STUDENT_QUERY = `UPDATE alumnos SET nombre='${nombre}', apellido='${apellido}', nivel='${nivel}',
+    patente_furgon='${patente_furgon}', curso='${curso}' WHERE id=${id}`;
 
-    pool.query(MODAL_QUERY, (err, results) => {
+    pool.query(MOD_STUDENT_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -205,13 +205,13 @@ app.get('/students/modify', (req, res) => {
     });
 });
 
-//MODIFICAR EL FURGÓN DE UN TÍO
+//MODIFICAR UN FURGÓN
 app.get('/furgon/modify', (req, res) => {
     const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
-    const MODFUR_QUERY = `UPDATE furgones SET rut_tio = ${rut_tio}, marca = '${marca}', modelo = '${modelo}',
-    capacidad = ${capacidad}, ano = ${ano} WHERE patente=${patente}`;
+    const MOD_FURGON_QUERY = `UPDATE furgones SET rut_tio=${rut_tio}, marca='${marca}', modelo='${modelo}',
+    capacidad=${capacidad}, ano=${ano} WHERE patente=${patente}`;
 
-    pool.query(MODFUR_QUERY, (err, results) => {
+    pool.query(MOD_FURGON_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -225,10 +225,10 @@ app.get('/furgon/modify', (req, res) => {
 //REGISTRAR UN USUARIO
 app.get('/users/register', (req, res) => {
     const {rut, password, nombre, apellido, telefono, direccion} = req.query;
-    const REGUS_QUERY = `INSERT INTO usuarios (rut, password, nombre, apellido, telefono, direccion) VALUES
+    const REGISTER_USER_QUERY = `INSERT INTO usuarios (rut, password, nombre, apellido, telefono, direccion) VALUES
     (${rut}, '${nombre}', '${apellido}', '${password}', ${telefono}, '${direccion}')`;
 
-    pool.query(REGUS_QUERY, (err, results) => {
+    pool.query(REGISTER_USER_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -239,13 +239,13 @@ app.get('/users/register', (req, res) => {
     });
 });
 
-//REGISTRAR UN ALUMNO
+//REGISTRAR UN ESTUDIANTE
 app.get('/students/register', (req, res) => {
     const {id, nombre, apellido, nivel, patente_furgon, curso} = req.query;
-    const REGAL_QUERY = `INSERT INTO alumnos (id, nombre, apellido, nivel, patente_furgon, curso, tipo_viaje, sector) VALUES
+    const REGISTER_STUDENT_QUERY = `INSERT INTO alumnos (id, nombre, apellido, nivel, patente_furgon, curso, tipo_viaje, sector) VALUES
     (${id}, '${nombre}', '${apellido}', '${nivel}', '${patente_furgon}', '${curso}', '${tipo_viaje}', ${sector})`;
 
-    pool.query(REGAL_QUERY, (err, results) => {
+    pool.query(REGISTER_STUDENT_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -259,10 +259,10 @@ app.get('/students/register', (req, res) => {
 //REGISTRAR FURGON
 app.get('/furgon/register', (req, res) => {
     const {patente, rut_tio, marca, modelo, capacidad, ano} = req.query;
-    const REGFUR_QUERY = `INSERT INTO furgones (patente, rut_tio, marca, modelo, capacidad, ano) VALUES
+    const REGISTER_FURGON_QUERY = `INSERT INTO furgones (patente, rut_tio, marca, modelo, capacidad, ano) VALUES
     ('${patente}', ${rut_tio}, '${marca}', '${modelo}', ${capacidad}, ${ano})`;
 
-    pool.query(REGFUR_QUERY, (err, results) => {
+    pool.query(REGISTER_FURGON_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -274,16 +274,15 @@ app.get('/furgon/register', (req, res) => {
 });
 
 //BUSCAR A QUIÉN PUEDE ENVIAR NOTIFICACIÓN
-
 app.get('/notification/search', (req, res) => {
     const {rut} = req.query;
-    const NOTSEA_QUERY = `SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT rut_tio FROM furgones WHERE patente = 
+    const NOTIFICATIONS_TARGETS_QUERY = `SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT rut_tio FROM furgones WHERE patente =
         (SELECT patente_furgon FROM alumnos WHERE id IN (SELECT alumno_id FROM tiene WHERE usuario_rut = ${rut})))
         UNION
-        SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT usuario_rut FROM tiene WHERE alumno_id IN (SELECT id FROM alumnos 
+        SELECT rut, nombre, apellido FROM usuarios WHERE rut IN (SELECT usuario_rut FROM tiene WHERE alumno_id IN (SELECT id FROM alumnos
         WHERE patente_furgon IN (SELECT patente FROM furgones WHERE rut_tio=${rut})))`;
 
-    pool.query(NOTSEA_QUERY, (err, results) => {
+    pool.query(NOTIFICATIONS_TARGETS_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -295,13 +294,12 @@ app.get('/notification/search', (req, res) => {
 });
 
 //OBTENER NOTIFICACIONES
-
 app.get('/message/search', (req, res) => {
     const {rut} = req.query;
-    const MESSEA_QUERY = `SELECT mensajes.id, usuarios.nombre, usuarios.apellido, rut_emisor, mensaje, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM mensajes, 
-    usuarios WHERE rut_receptor = ${rut} AND usuarios.rut = mensajes.rut_emisor ORDER BY id DESC`;
+    const MESSAGES_SEARCH_QUERY = `SELECT mensajes.id, usuarios.nombre, usuarios.apellido, rut_emisor, mensaje, DATE_FORMAT(fecha, '%d/%m/%Y') as fecha FROM mensajes,
+    usuarios WHERE rut_receptor=${rut} AND usuarios.rut=mensajes.rut_emisor ORDER BY id DESC`;
 
-    pool.query(MESSEA_QUERY, (err, results) => {
+    pool.query(MESSAGES_SEARCH_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -313,13 +311,12 @@ app.get('/message/search', (req, res) => {
 });
 
 //NUEVA NOTIFICACION
-
 app.get('/message/new', (req, res) => {
     const {rut_emisor, rut_receptor, mensaje, fecha} = req.query;
-    const NEWMES_QUERY = `INSERT INTO mensajes (rut_emisor, rut_receptor, mensaje, fecha) VALUES
+    const INSERT_MESSAGE_QUERY = `INSERT INTO mensajes (rut_emisor, rut_receptor, mensaje, fecha) VALUES
     (${rut_emisor}, ${rut_receptor}, '${mensaje}', '${fecha}')`;
 
-    pool.query(NEWMES_QUERY, (err, results) => {
+    pool.query(INSERT_MESSAGE_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -331,12 +328,11 @@ app.get('/message/new', (req, res) => {
 });
 
 //ELIMINAR FURGON
-
 app.get('/furgon/delete', (req, res) => {
     const {patente} = req.query;
-    const DELFUR_QUERY = `DELETE FROM furgones WHERE patente=${patente})`;
+    const DELETE_FURGON_QUERY = `DELETE FROM furgones WHERE patente=${patente})`;
 
-    pool.query(DELFUR_QUERY, (err, results) => {
+    pool.query(DELETE_FURGON_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -348,12 +344,11 @@ app.get('/furgon/delete', (req, res) => {
 });
 
 //ELIMINAR USUARIO
-
 app.get('/user/delete', (req, res) => {
     const {rut} = req.query;
-    const DELUSU_QUERY = `DELETE FROM usuarios WHERE rut=${rut})`;
+    const DELETE_USER_QUERY = `DELETE FROM usuarios WHERE rut=${rut})`;
 
-    pool.query(DELUSU_QUERY, (err, results) => {
+    pool.query(DELETE_USER_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
@@ -365,12 +360,11 @@ app.get('/user/delete', (req, res) => {
 });
 
 //ELIMINAR ALUMNO
-
 app.get('/students/delete', (req, res) => {
     const {id} = req.query;
-    const DELALU_QUERY = `DELETE FROM alumnos WHERE id=${id})`;
+    const DELETE_STUDENT_QUERY = `DELETE FROM alumnos WHERE id=${id})`;
 
-    pool.query(DELALU_QUERY, (err, results) => {
+    pool.query(DELETE_STUDENT_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
