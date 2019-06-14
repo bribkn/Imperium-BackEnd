@@ -241,7 +241,7 @@ app.get('/users/register', (req, res) => {
 
 //REGISTRAR UN ESTUDIANTE
 app.get('/students/register', (req, res) => {
-    const {id, nombre, apellido, nivel, patente_furgon, curso} = req.query;
+    const {id, nombre, apellido, nivel, patente_furgon, curso, tipo_viaje, sector} = req.query;
     const REGISTER_STUDENT_QUERY = `INSERT INTO alumnos (id, nombre, apellido, nivel, patente_furgon, curso, tipo_viaje, sector) VALUES
     (${id}, '${nombre}', '${apellido}', '${nivel}', '${patente_furgon}', '${curso}', '${tipo_viaje}', ${sector})`;
 
