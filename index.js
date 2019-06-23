@@ -110,7 +110,12 @@ app.get('/users/search', (req, res) => {
 //BUSCAR ESTUDIANTES TRANSPORTADOS POR UN TÍO
 app.get('/students/tio', (req, res) => {
     const { rut } = req.query;
-    const STUDENTS_BY_TIO_QUERY = `SELECT * FROM alumnos WHERE patente_furgon = (SELECT patente FROM furgones WHERE rut_tio=${rut}) ORDER BY id`;
+    const STUDENTS_BY_TIO_QUERY = `SELECT alumnos.*, usuarios.telefono 
+    FROM alumnos 
+    JOIN tiene ON alumnos.id = tiene.alumno_id
+    JOIN usuarios ON tiene.usuario_rut = usuarios.rut 
+    WHERE patente_furgon = 
+    (SELECT patente FROM furgones WHERE rut_tio=${rut}) ORDER BY id`;
 
     pool.query(STUDENTS_BY_TIO_QUERY, (err, results) => {
         if (err) {
@@ -376,14 +381,6 @@ app.get('/students/delete', (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
 // SUBIR LOCALIZACION TIO
 app.get('/subirlltio', (req, res) => {
     const { rut_tio, fecha, hora, latitud, longitud } = req.query;
@@ -406,6 +403,46 @@ app.get('/obtenerlltio', (req, res) => {
     const GET = `SELECT id, latitud as lat, longitud as lng, fecha, hora FROM posiciones WHERE rut_tio=${rut_tio} ORDER BY id DESC`;
 
     pool.query(GET, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//ALUMNOS POR SECTOR
+app.get('/students/sector', (req, res) => {
+    const { sector } = req.query;
+    const STUDENTS_BY_SECTOR_QUERY = `SELECT alumnos.*, usuarios.telefono 
+    FROM alumnos 
+    JOIN tiene ON alumnos.id = tiene.alumno_id
+    JOIN usuarios ON tiene.usuario_rut = usuarios.rut 
+    WHERE sector = '${sector}' ORDER BY id`;
+
+    pool.query(STUDENTS_BY_SECTOR_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//ALUMNOS POR APODERADO
+app.get('/students/apoderado', (req, res) => {
+    const { rut } = req.query;
+    const STUDENTS_BY_APODERADO_QUERY = `SELECT alumnos.*, usuarios.telefono 
+    FROM alumnos 
+    JOIN tiene ON alumnos.id = tiene.alumno_id
+    JOIN usuarios ON tiene.usuario_rut = usuarios.rut 
+    WHERE usuarios.rut = ${rut} ORDER BY id`;
+
+    pool.query(STUDENTS_BY_APODERADO_QUERY, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
