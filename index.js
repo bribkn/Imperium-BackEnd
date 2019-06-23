@@ -312,7 +312,7 @@ app.get('/message/search', (req, res) => {
 
 //NUEVA NOTIFICACION
 app.get('/message/new', (req, res) => {
-    const {rut_emisor, rut_receptor, mensaje, fecha} = req.query;
+    const { rut_emisor, rut_receptor, mensaje, fecha } = req.query;
     const INSERT_MESSAGE_QUERY = `INSERT INTO mensajes (rut_emisor, rut_receptor, mensaje, fecha) VALUES
     (${rut_emisor}, ${rut_receptor}, '${mensaje}', '${fecha}')`;
 
@@ -329,7 +329,7 @@ app.get('/message/new', (req, res) => {
 
 //ELIMINAR FURGON
 app.get('/furgon/delete', (req, res) => {
-    const {patente} = req.query;
+    const { patente } = req.query;
     const DELETE_FURGON_QUERY = `DELETE FROM furgones WHERE patente=${patente})`;
 
     pool.query(DELETE_FURGON_QUERY, (err, results) => {
@@ -345,7 +345,7 @@ app.get('/furgon/delete', (req, res) => {
 
 //ELIMINAR USUARIO
 app.get('/user/delete', (req, res) => {
-    const {rut} = req.query;
+    const { rut } = req.query;
     const DELETE_USER_QUERY = `DELETE FROM usuarios WHERE rut=${rut})`;
 
     pool.query(DELETE_USER_QUERY, (err, results) => {
@@ -361,10 +361,51 @@ app.get('/user/delete', (req, res) => {
 
 //ELIMINAR ALUMNO
 app.get('/students/delete', (req, res) => {
-    const {id} = req.query;
+    const { id } = req.query;
     const DELETE_STUDENT_QUERY = `DELETE FROM alumnos WHERE id=${id})`;
 
     pool.query(DELETE_STUDENT_QUERY, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+// SUBIR LOCALIZACION TIO
+app.get('/subirlltio', (req, res) => {
+    const { rut_tio, fecha, hora, latitud, longitud } = req.query;
+    const INSERT = `INSERT INTO posiciones(rut_tio, fecha, hora, latitud, longitud) VALUES(${rut_tio}, '${fecha}', '${hora}', ${latitud}, ${longitud})`;
+
+    pool.query(INSERT, (err, results) => {
+        if (err) {
+            return res.send(err);
+        }else{
+            return res.json(({
+                data: results
+            }))
+        }
+    });
+});
+
+//OBTENER LOCALIZACION TIO
+app.get('/obtenerlltio', (req, res) => {
+    const { rut_tio } = req.query;
+    const GET = `SELECT id, latitud as lat, longitud as lng, fecha, hora FROM posiciones WHERE rut_tio=${rut_tio} ORDER BY id DESC`;
+
+    pool.query(GET, (err, results) => {
         if (err) {
             return res.send(err);
         }else{
