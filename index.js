@@ -455,7 +455,9 @@ app.get('/students/apoderado', (req, res) => {
 
 // todos los estudiantes con contactos
 app.get('/students/all', (req, res) => {
-    const STUDENTS_QUERY = `SELECT * FROM alumnos, usuarios, tiene WHERE alumnos.id = tiene.alumno_id AND usuarios.rut = tiene.usuario_rut AND alumnos.patente_furgon = usuarios.patente_furgon `;
+    const STUDENTS_QUERY = `SELECT id, t1.nombre as nombre_alumno, t1.apellido as apellido_alumno, nivel, patente_furgon, curso, t1.rut_apoderado, t1.nombre_apoderado, t1.apellido_apoderado, t1.telefono_apoderado, t1.direccion, t1.rut_tio, usuarios.telefono as telefono_tio, usuarios.nombre as nombre_tio, usuarios.apellido as apellido_tio FROM usuarios,
+(SELECT id, alumnos.nombre, alumnos.apellido, nivel, patente_furgon, curso, rut as rut_apoderado, usuarios.nombre as nombre_apoderado, usuarios.apellido as apellido_apoderado, telefono as telefono_apoderado, direccion, rut_tio FROM alumnos, usuarios, tiene, furgones WHERE alumnos.id = tiene.alumno_id AND usuarios.rut = tiene.usuario_rut AND furgones.patente = alumnos.patente_furgon) as t1
+WHERE t1.rut_tio = usuarios.rut`;
 
     pool.query(STUDENTS_QUERY, (err, results) => {
         if (err) {
