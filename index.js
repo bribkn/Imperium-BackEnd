@@ -384,7 +384,7 @@ app.get('/students/delete', (req, res) => {
 // SUBIR LOCALIZACION TIO
 app.get('/subirlltio', (req, res) => {
     const { rut_tio, fecha, hora, latitud, longitud } = req.query;
-    const INSERT = `INSERT INTO posiciones(rut_tio, fecha, hora, latitud, longitud) VALUES(${rut_tio}, '${fecha}', '${hora}', ${latitud}, ${longitud})`;
+    const INSERT = `INSERT INTO posiciones(rut_tio, fecha, latitud, longitud) VALUES(${rut_tio}, '${fecha}', ${latitud}, ${longitud})`;
 
     pool.query(INSERT, (err, results) => {
         if (err) {
@@ -400,7 +400,7 @@ app.get('/subirlltio', (req, res) => {
 //OBTENER LOCALIZACION TIO
 app.get('/obtenerlltio', (req, res) => {
     const { rut_tio } = req.query;
-    const GET = `SELECT id, latitud as lat, longitud as lng, fecha, hora FROM posiciones WHERE rut_tio=${rut_tio} ORDER BY id DESC`;
+    const GET = `SELECT id, latitud as lat, longitud as lng, date_format(fecha, '%Y-%m-%d %H:%i:%s') as fecha FROM posiciones WHERE rut_tio=${rut_tio} ORDER BY id DESC`;
 
     pool.query(GET, (err, results) => {
         if (err) {
