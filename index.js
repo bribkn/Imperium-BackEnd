@@ -27,7 +27,7 @@ pool.on('connection', function (connection) {
 app.use(cors());
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
-    var allowedOrigins = ['http://localhost:3000', 'https://localhost:3000'];
+    var allowedOrigins = ['https://localhost:3000', 'https://imperium-fe.herokuapp.com', 'https://intranet.transportegreenland.cl'];
     var origin = req.headers.origin;
 
     if(allowedOrigins.indexOf(origin) > -1)
